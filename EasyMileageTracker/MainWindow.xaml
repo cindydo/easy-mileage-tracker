@@ -1,0 +1,98 @@
+﻿<Window x:Class="EasyMileageTracker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EasyMileageTracker"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" WindowState="Maximized">
+    <Grid>
+        <StackPanel>
+            <TextBlock Text="Easy Mileage Tracker" Margin="20" FontSize="24"></TextBlock>
+            <StackPanel Orientation="Horizontal">
+                <Button Margin="20" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" CommandTarget="{Binding ElementName=mdDialog1}">New Mileage Log Entry</Button>
+                <Button>Export</Button>
+            </StackPanel>
+            <Viewbox>
+                <DataGrid x:Name="dataGridMileageLogs" AutoGenerateColumns="False" ItemsSource="{Binding}" CanUserAddRows="false">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Visibility="Hidden" Header="ID" Binding="{Binding Id}"></DataGridTextColumn>
+                        <DataGridTextColumn x:Name="dataGridColumnDate" Header="Date" Binding="{Binding Date}"></DataGridTextColumn>
+                        <DataGridTextColumn x:Name="dataGridColumnTime" Header="Time" Binding="{Binding StartTime}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Starting Point" Binding="{Binding StartingPoint}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Destination" Binding="{Binding Destination}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Classification" Binding="{Binding Purpose}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Trip Details" Binding="{Binding PurposeDetails}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Total Kilometres Driven" Binding="{Binding TotalDistance, StringFormat={}{0:n2}}"></DataGridTextColumn>
+                        <DataGridTemplateColumn Header="Actions">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="btnEdit" Content="{materialDesign:PackIcon Edit}" ToolTip="Edit" Margin="5" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" CommandTarget="{Binding ElementName=dialogEdit}" Click="btnEdit_Click"/>
+                                        <Button x:Name="btnDelete" Content="{materialDesign:PackIcon Delete}" ToolTip="Delete" Margin="5" Click="btnDelete_Click"/>
+                                    </StackPanel>
+
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Viewbox>
+        </StackPanel>
+        <materialDesign:DialogHost Name="mdDialog1" CloseOnClickAway="True">
+            <materialDesign:DialogHost.DialogContent>
+                <Grid Width="500" Height="540" Margin="20">
+                    <StackPanel Margin="20">
+                        <TextBlock Text="New Mileage Log Entry" Margin="0,20,0,0" FontSize="20"></TextBlock>
+                        <DatePicker Margin="0,20,0,0" materialDesign:HintAssist.Hint="Date" Name="txtBoxDate" SelectedDateFormat="Long"></DatePicker>
+                        <materialDesign:TimePicker Margin="0,20,0,0" Name="txtBoxTime" Style="{StaticResource MaterialDesignFloatingHintTimePicker}" materialDesign:HintAssist.Hint="Time" />
+                        <TextBox x:Name="txtBoxStartingPoint" Margin="0,20,0,0" materialDesign:HintAssist.Hint="Starting Point" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                        <TextBox x:Name="txtBoxDestination" Margin="0,20,0,0" TextWrapping="Wrap" materialDesign:HintAssist.Hint="Destination" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                        
+                        <StackPanel Orientation="Horizontal" Margin="-4,30,0,0">
+                            <Label>Purpose of Trip:</Label>
+                            <RadioButton x:Name="btnBusiness" Margin="10,3,10,10" IsChecked="True" GroupName="purpose">Business</RadioButton>
+                            <RadioButton x:Name="btnPersonal" Margin="10,3,10,10" GroupName="purpose">Personal</RadioButton>
+                        </StackPanel>
+                        <TextBox x:Name="txtBoxTripDetails" Margin="0,10,0,0" TextWrapping="Wrap" materialDesign:HintAssist.Hint="Trip Details" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                        <TextBox x:Name="txtBoxTotalDistance" Margin="0,20,0,0" HorizontalAlignment="Left" Width="200" TextWrapping="Wrap" materialDesign:HintAssist.Hint="Total Kilometres Driven" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Text="0.00"/>
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Bottom" Margin="20">
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="0,20,20,0" Width="76" MinWidth="100" Click="btnCancel_Click" />
+                            <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" Margin="0,20,0,0" Width="76" MinWidth="100" Click="btnSave_Click" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+        <materialDesign:DialogHost Name="dialogEdit" CloseOnClickAway="True">
+            <materialDesign:DialogHost.DialogContent>
+                <Grid Width="500" Height="540" Margin="20">
+                    <StackPanel Margin="20">
+                        <TextBlock Text="Edit Mileage Entry" Margin="0,20,0,0" FontSize="20"></TextBlock>
+                        <DatePicker Margin="0,20,0,0" materialDesign:HintAssist.Hint="Date" Name="txtBoxEditDate" SelectedDateFormat="Long"></DatePicker>
+                        <materialDesign:TimePicker Margin="0,20,0,0" Name="txtBoxEditTime" Style="{StaticResource MaterialDesignFloatingHintTimePicker}" materialDesign:HintAssist.Hint="Time" />
+                        <TextBox x:Name="txtBoxEditStartingPoint" Margin="0,20,0,0" materialDesign:HintAssist.Hint="Starting Point" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                        <TextBox x:Name="txtBoxEditDestination" Margin="0,20,0,0" TextWrapping="Wrap" materialDesign:HintAssist.Hint="Destination" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                        <StackPanel Orientation="Horizontal" Margin="-4,30,0,0">
+                            <Label>Purpose of Trip:</Label>
+                            <RadioButton x:Name="btnEditBusiness" Margin="10,3,10,10">Business</RadioButton>
+                            <RadioButton x:Name="btnEditPersonal" Margin="10,3,10,10">Personal</RadioButton>
+                        </StackPanel>
+                        
+                        <TextBox x:Name="txtBoxEditTripDetails" Margin="0,20,0,0" TextWrapping="Wrap" materialDesign:HintAssist.Hint="Trip Details" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                        <TextBox x:Name="txtBoxEditTotalDistance" Margin="0,20,0,0" HorizontalAlignment="Left" Width="200" TextWrapping="Wrap" materialDesign:HintAssist.Hint="Total Kilometres Driven" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Bottom" Margin="20">
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="btnCancelEdit" Content="Cancel" HorizontalAlignment="Left" Margin="0,20,20,0" Width="76" MinWidth="100" Click="btnCancelEdit_Click" />
+                            <Button x:Name="btnSaveEdit" Content="Save" HorizontalAlignment="Left" Margin="0,20,0,0" Width="76" MinWidth="100" Click="btnSaveEdit_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+    </Grid>
+</Window>
