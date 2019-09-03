@@ -12,7 +12,7 @@
             <TextBlock Text="Easy Mileage Tracker" Margin="20" FontSize="24"></TextBlock>
             <StackPanel Orientation="Horizontal">
                 <Button Margin="20" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" CommandTarget="{Binding ElementName=mdDialog1}">New Mileage Log Entry</Button>
-                <Button>Export</Button>
+                <Button Click="btnExport_Click">Export</Button>
             </StackPanel>
             <Viewbox>
                 <DataGrid x:Name="dataGridMileageLogs" AutoGenerateColumns="False" ItemsSource="{Binding}" CanUserAddRows="false">

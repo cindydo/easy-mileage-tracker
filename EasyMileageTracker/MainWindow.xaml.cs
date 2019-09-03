@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Xceed.Words.NET;
+using System.Drawing;
+using System.Diagnostics;
 
 namespace EasyMileageTracker
 {
@@ -203,6 +206,87 @@ namespace EasyMileageTracker
         private void btnCancelEdit_Click(object sender, RoutedEventArgs e)
         {
             dialogEdit.IsOpen = false;
+        }
+
+        private void btnExport_Click(object sender, RoutedEventArgs e)
+        {
+            ExportWord();
+        }
+
+        private void ExportWord()
+        {
+            // Set file path
+            string fileName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string extension = ".docx";
+            fileName += @"\example" + extension;
+
+            // Create file
+            var doc = DocX.Create(fileName);
+
+            // Set the document margins
+            doc.MarginLeft = 40f;
+            doc.MarginRight = 40f;
+            doc.MarginTop = 40;
+            doc.MarginBottom = 40f;
+
+            // Create Table with rows and columns  
+            Xceed.Words.NET.Table t = doc.AddTable(dataGridMileageLogs.Items.Count + 1, 7);
+            t.Alignment = Alignment.center;
+            t.Design = TableDesign.TableGrid;
+
+            // Set the header colours
+            t.Rows[0].Cells[0].FillColor = System.Drawing.Color.LightGray;
+            t.Rows[0].Cells[1].FillColor = System.Drawing.Color.LightGray;
+            t.Rows[0].Cells[2].FillColor = System.Drawing.Color.LightGray;
+            t.Rows[0].Cells[3].FillColor = System.Drawing.Color.LightGray;
+            t.Rows[0].Cells[4].FillColor = System.Drawing.Color.LightGray;
+            t.Rows[0].Cells[5].FillColor = System.Drawing.Color.LightGray;
+            t.Rows[0].Cells[6].FillColor = System.Drawing.Color.LightGray;
+
+            Formatting boldFormatting = new Formatting();
+            boldFormatting.Bold = true;
+
+            // Set the header titles
+            t.Rows[0].Cells[0].Paragraphs.First().Append("Date", boldFormatting);
+            t.Rows[0].Cells[1].Paragraphs.First().Append("Start Time", boldFormatting);
+            t.Rows[0].Cells[2].Paragraphs.First().Append("Starting Point", boldFormatting);
+            t.Rows[0].Cells[3].Paragraphs.First().Append("Destination", boldFormatting);
+            t.Rows[0].Cells[4].Paragraphs.First().Append("Classification", boldFormatting);
+            t.Rows[0].Cells[5].Paragraphs.First().Append("Details", boldFormatting);
+            t.Rows[0].Cells[6].Paragraphs.First().Append("Total Kilometres Driven", boldFormatting);
+
+            int count = 0;
+
+            var itemsSource = dataGridMileageLogs.ItemsSource;
+
+            if (itemsSource != null)
+            {
+                foreach (var item in itemsSource)
+                {
+                    var row = dataGridMileageLogs.ItemContainerGenerator.ContainerFromItem(item) as DataGridRow;
+                    if (row != null)
+                    {
+                        count++;
+                        MileageLog logEntry = (MileageLog)row.Item;
+                        t.Rows[count].Cells[0].Paragraphs.First().Append(logEntry.Date);
+                        t.Rows[count].Cells[1].Paragraphs.First().Append(logEntry.StartTime);
+                        t.Rows[count].Cells[2].Paragraphs.First().Append(logEntry.StartingPoint);
+                        t.Rows[count].Cells[3].Paragraphs.First().Append(logEntry.Destination);
+                        t.Rows[count].Cells[4].Paragraphs.First().Append(logEntry.Purpose);
+                        t.Rows[count].Cells[5].Paragraphs.First().Append(logEntry.PurposeDetails);
+                        t.Rows[count].Cells[6].Paragraphs.First().Append(logEntry.TotalDistance.ToString("F"));
+                    }
+                }
+            }
+
+            // Insert Table
+            doc.InsertTable(t);
+
+            // Save document
+            doc.Save();
+
+            // Start Word
+            Process.Start("WINWORD.EXE", fileName);
         }
     }
 }
